@@ -6,9 +6,13 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import {
   counterLoaded,
   counterLoadingError,
+
+  resetLoaded,
+  resetLoadingError
 } from './actions'
 
 import {
+  RESET_COUNTER,
   LOAD_COUNTER,
   SERVER_ADDRESS,  
 } from './constants'
@@ -34,15 +38,42 @@ export function* getCounterWatcher() {
     yield call(getCount, action);
   }
 }
+
+// RESET 
+export function* resetCount(action) {
+  const requestURL = SERVER_ADDRESS + `/v1/reset` ;
+
+  const func = yield call(request, requestURL);
+
+  if (!func.err) {
+    yield put(resetLoaded(func.data));
+    yield call(getCount, action);
+  } else {
+    console.log(func.err)
+    yield put(resetLoadingError(func.err));
+  }
+}
+
+export function* resetCounterWatcher() {
+   while (true) {
+    
+    const action = yield take(RESET_COUNTER);
+    yield call(resetCount, action);
+  }
+}
+
+
 // Individual exports for testing
 export function* counterData() {
   // Fork watchers so we can continue execution
   const getc = yield fork(getCounterWatcher);
+  const reset = yield fork(resetCounterWatcher);
 
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
   yield cancel(getc);
+  yield cancel(reset);
 
 }
 

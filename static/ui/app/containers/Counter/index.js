@@ -10,7 +10,7 @@ import selectCounter from './selectors';
 
 import { Grid, Row, Col, Button, Jumbotron } from 'react-bootstrap';
 
-import { loadCounter } from './actions' 
+import { loadCounter, resetCounter } from './actions' 
 
 export class Counter extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
@@ -30,7 +30,7 @@ export class Counter extends React.Component { // eslint-disable-line react/pref
             <p>It uses BoltDB (very cool Golang embedded database) that is meant to run on a single host without replication </p>
             <p><Button bsStyle="success" onClick={this.props.onLoad}>Count</Button>
               {' '}
-              <Button bsStyle="warning">Reset</Button>
+              <Button bsStyle="warning" onClick={this.props.resetCounter}>Reset</Button>
               {' '}
               <Button bsStyle="danger">Crash!</Button></p>
           </Col>
@@ -64,6 +64,10 @@ function mapDispatchToProps(dispatch) {
   return {
      onLoad: () => {
       dispatch(loadCounter());
+    },
+
+    resetCounter: (func) => {
+      dispatch(resetCounter(func))
     },
 
     dispatch,
