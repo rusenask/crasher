@@ -1,4 +1,4 @@
-FROM scratch
+FROM busybox
 MAINTAINER karolis.rusenas@gmail.com
 
 COPY       crasher /bin/crasher
