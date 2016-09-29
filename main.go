@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,13 +12,25 @@ import (
 )
 
 var mu sync.Mutex
-var count int
 
 func (c *Crasher) echoString(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "hello, World!")
 }
 
+func addHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 func (c *Crasher) counterHandler(w http.ResponseWriter, r *http.Request) {
+	addHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+		return
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	// count++
@@ -26,16 +39,18 @@ func (c *Crasher) counterHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("got error: %s", err.Error())
 		return
 	}
-	fmt.Fprintf(w, "Count %d\n", count)
+	fmt.Fprintf(w, fmt.Sprintf(`{"count": %d}`, count))
 }
 
 func (c *Crasher) crashHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Crashing!")
+	addHeaders(w)
+	fmt.Fprintf(w, `{"action": "crash"}`)
 	log.Fatal("failed due to fatal log level")
 }
 
 func (c *Crasher) resetHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Reseting")
+	addHeaders(w)
+	fmt.Fprintf(w, `{"action": "crash"}`)
 	c.reset()
 }
 
@@ -96,7 +111,17 @@ func (c *Crasher) reset() (err error) {
 }
 
 func main() {
-	db, err := bolt.Open("/data/crasher.db", 0600, nil)
+
+	dev := flag.Bool("dev", false, "if -dev supplied, creates crasher.db in current dir")
+	flag.Parse()
+
+	path := "/data/crasher.db"
+
+	if *dev {
+		path = "crasher.db"
+	}
+
+	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,9 +129,9 @@ func main() {
 
 	c := &Crasher{db: db, bucket: []byte("somebucket")}
 
-	http.HandleFunc("/count", c.counterHandler)
-	http.HandleFunc("/reset", c.resetHandler)
-	http.HandleFunc("/crash", c.crashHandler)
+	http.HandleFunc("/v1/count", c.counterHandler)
+	http.HandleFunc("/v1/reset", c.resetHandler)
+	http.HandleFunc("/v1/crash", c.crashHandler)
 
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, r.URL.Path[1:])
