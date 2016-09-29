@@ -3,3 +3,6 @@ build:
 	
 image: build
 	docker build -t karolisr/crasher -f Dockerfile .
+
+push:
+	docker push karolisr/crasher
