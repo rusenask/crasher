@@ -4,5 +4,5 @@ build image:
 
 start Crasher container with StorageOS volume:
 
-    docker run -it -d -v crasher-data:/data --volume-driver=storageos --restart always -p 8081:8081  karolisr/crasher
+    docker run -d -it -v crasher-data:/data --volume-driver=storageos -p 8081:8081  karolisr/crasher
 
