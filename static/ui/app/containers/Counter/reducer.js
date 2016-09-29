@@ -15,7 +15,7 @@ import {
 const initialState = fromJS({
   loading: false,
   error: false,
-  count: 0
+  counter: {"count": 0}
 });
 
 function counterReducer(state = initialState, action) {
@@ -30,7 +30,7 @@ function counterReducer(state = initialState, action) {
 
     case LOAD_COUNTER_SUCCESS:
       return state
-        .set('count', action.count)
+        .set('counter', action.count)
         .set('loading', false)
 
     case LOAD_COUNTER_ERROR:
