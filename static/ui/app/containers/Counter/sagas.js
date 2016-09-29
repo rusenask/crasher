@@ -12,6 +12,7 @@ import {
 } from './actions'
 
 import {
+  CRASH,
   RESET_COUNTER,
   LOAD_COUNTER,
   SERVER_ADDRESS,  
@@ -62,18 +63,41 @@ export function* resetCounterWatcher() {
   }
 }
 
+// CRASH it
+export function* crashCounter(action) {
+  const requestURL = SERVER_ADDRESS + `/v1/crash` ;
+
+  const func = yield call(request, requestURL);
+
+  if (!func.err) {
+     yield call(getCount, action); 
+  } else {    
+    yield put(resetLoadingError(func.err));
+  }
+}
+
+export function* crashCounterWatcher() {
+   while (true) {
+    
+    const action = yield take(CRASH);
+    yield call(crashCounter, action);
+  }
+}
+
 
 // Individual exports for testing
 export function* counterData() {
   // Fork watchers so we can continue execution
   const getc = yield fork(getCounterWatcher);
   const reset = yield fork(resetCounterWatcher);
+  const crash = yield fork(crashCounterWatcher);
 
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
   yield cancel(getc);
   yield cancel(reset);
+  yield cancel(crash);
 
 }
 

@@ -10,14 +10,14 @@ import selectCounter from './selectors';
 
 import { Grid, Row, Col, Button, Jumbotron } from 'react-bootstrap';
 
-import { loadCounter, resetCounter } from './actions' 
+import { loadCounter, resetCounter, crashCounter } from './actions'
 
 export class Counter extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
 
-   componentWillMount() {
+  componentWillMount() {
     this.props.onLoad();
-  }  
+  }
 
   render() {
 
@@ -32,7 +32,7 @@ export class Counter extends React.Component { // eslint-disable-line react/pref
               {' '}
               <Button bsStyle="warning" onClick={this.props.resetCounter}>Reset</Button>
               {' '}
-              <Button bsStyle="danger">Crash!</Button></p>
+              <Button bsStyle="danger" onClick={this.props.crashCounter}>Crash!</Button></p>
           </Col>
           <Col md={2}>
             <h1> {this.props.counter.count} </h1>
@@ -62,12 +62,16 @@ const mapStateToProps = selectCounter();
 
 function mapDispatchToProps(dispatch) {
   return {
-     onLoad: () => {
+    onLoad: () => {
       dispatch(loadCounter());
     },
 
     resetCounter: (func) => {
       dispatch(resetCounter(func))
+    },
+
+    crashCounter: (func) => {
+      dispatch(crashCounter(func))
     },
 
     dispatch,

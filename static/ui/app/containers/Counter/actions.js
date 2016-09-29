@@ -10,6 +10,8 @@ import {
   LOAD_COUNTER_SUCCESS,
   LOAD_COUNTER_ERROR,
 
+  CRASH,
+
   RESET_COUNTER,
   RESET_COUNTER_ERROR,
   RESET_COUNTER_SUCCESS,
@@ -21,6 +23,11 @@ export function defaultAction() {
   };
 }
 
+export function crashCounter() {
+  return {
+    type: CRASH,
+  };
+}
 
 export function loadCounter() {
   return {
