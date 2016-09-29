@@ -9,6 +9,9 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
+
+	"github.com/rakyll/statik/fs"
+	_ "github.com/rusenask/crasher/statik"
 )
 
 var mu sync.Mutex
@@ -133,9 +136,13 @@ func main() {
 	http.HandleFunc("/v1/reset", c.resetHandler)
 	http.HandleFunc("/v1/crash", c.crashHandler)
 
-	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[1:])
-	})
+	statikFS, err := fs.New()
+
+	if err != nil {
+		log.Fatalf("failed to load statik: %s", err.Error())
+	}
+
+	http.Handle("/", http.FileServer(statikFS))
 
 	http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi")
