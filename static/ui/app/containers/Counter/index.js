@@ -10,17 +10,22 @@ import selectCounter from './selectors';
 
 import { Grid, Row, Col, Button, Jumbotron } from 'react-bootstrap';
 
-import { loadCounter, resetCounter, crashCounter } from './actions'
+import { loadCounter, resetCounter, crashCounter } from './actions';
 
 export class Counter extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
+  static propTypes = {
+    onLoad: React.PropTypes.func,
+    resetCounter: React.PropTypes.func,
+    crashCounter: React.PropTypes.func,
+    counter: React.PropTypes.object,
+  };
 
   componentWillMount() {
     this.props.onLoad();
   }
 
   render() {
-
     const jumbotronInstance = (
       <Jumbotron>
         <Row>
@@ -40,7 +45,6 @@ export class Counter extends React.Component { // eslint-disable-line react/pref
         </Row>
       </Jumbotron>
     );
-
     return (
       <div>
         <Grid>
@@ -49,10 +53,7 @@ export class Counter extends React.Component { // eslint-disable-line react/pref
               {jumbotronInstance}
             </Col>
           </Row>
-          <hr/>
-
         </Grid>
-
       </div>
     );
   }
@@ -67,11 +68,11 @@ function mapDispatchToProps(dispatch) {
     },
 
     resetCounter: (func) => {
-      dispatch(resetCounter(func))
+      dispatch(resetCounter(func));
     },
 
     crashCounter: (func) => {
-      dispatch(crashCounter(func))
+      dispatch(crashCounter(func));
     },
 
     dispatch,

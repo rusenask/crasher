@@ -38,7 +38,7 @@ export function loadCounter() {
 export function counterLoaded(count) {
   return {
     type: LOAD_COUNTER_SUCCESS,
-    count,    
+    count,
   };
 }
 
@@ -58,7 +58,7 @@ export function resetCounter() {
 export function resetLoaded(count) {
   return {
     type: RESET_COUNTER_SUCCESS,
-    count,    
+    count,
   };
 }
 

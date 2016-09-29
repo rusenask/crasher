@@ -1,5 +1,5 @@
 // import { take, call, put, select } from 'redux-saga/effects';
-import { take, takeEvery, call, put, select, fork, cancel } from 'redux-saga/effects';
+import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import request from 'utils/request';
 import { LOCATION_CHANGE } from 'react-router-redux';
 
@@ -8,41 +8,41 @@ import {
   counterLoadingError,
 
   resetLoaded,
-  resetLoadingError
-} from './actions'
+  resetLoadingError,
+} from './actions';
 
 import {
   CRASH,
   RESET_COUNTER,
   LOAD_COUNTER,
-  SERVER_ADDRESS,  
-} from './constants'
+  // SERVER_ADDRESS,
+} from './constants';
 
 
-export function* getCount(action) {
-  const requestURL = SERVER_ADDRESS + `/v1/count` ;
+export function* getCount() {
+  // const requestURL = SERVER_ADDRESS + `/v1/count`;
+  const requestURL = '/v1/count';
 
   const func = yield call(request, requestURL);
 
   if (!func.err) {
     yield put(counterLoaded(func.data));
   } else {
-    console.log(func.err)
     yield put(counterLoadingError(func.err));
   }
 }
 
 export function* getCounterWatcher() {
-   while (true) {
-    
+  while (true) {
     const action = yield take(LOAD_COUNTER);
     yield call(getCount, action);
   }
 }
 
-// RESET 
+// RESET
 export function* resetCount(action) {
-  const requestURL = SERVER_ADDRESS + `/v1/reset` ;
+  // const requestURL = SERVER_ADDRESS + `/v1/reset`;
+  const requestURL = '/v1/reset';
 
   const func = yield call(request, requestURL);
 
@@ -50,14 +50,12 @@ export function* resetCount(action) {
     yield put(resetLoaded(func.data));
     yield call(getCount, action);
   } else {
-    console.log(func.err)
     yield put(resetLoadingError(func.err));
   }
 }
 
 export function* resetCounterWatcher() {
-   while (true) {
-    
+  while (true) {
     const action = yield take(RESET_COUNTER);
     yield call(resetCount, action);
   }
@@ -65,20 +63,20 @@ export function* resetCounterWatcher() {
 
 // CRASH it
 export function* crashCounter(action) {
-  const requestURL = SERVER_ADDRESS + `/v1/crash` ;
+  // const requestURL = SERVER_ADDRESS + `/v1/crash`;
+  const requestURL = '/v1/crash';
 
   const func = yield call(request, requestURL);
 
   if (!func.err) {
-     yield call(getCount, action); 
-  } else {    
+    yield call(getCount, action);
+  } else {
     yield put(resetLoadingError(func.err));
   }
 }
 
 export function* crashCounterWatcher() {
-   while (true) {
-    
+  while (true) {
     const action = yield take(CRASH);
     yield call(crashCounter, action);
   }
@@ -98,9 +96,7 @@ export function* counterData() {
   yield cancel(getc);
   yield cancel(reset);
   yield cancel(crash);
-
 }
-
 // All sagas to be loaded
 export default [
   counterData,
