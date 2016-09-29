@@ -96,7 +96,7 @@ func (c *Crasher) reset() (err error) {
 }
 
 func main() {
-	db, err := bolt.Open("crasher.db", 0600, nil)
+	db, err := bolt.Open("/data/crasher.db", 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,7 +104,6 @@ func main() {
 
 	c := &Crasher{db: db, bucket: []byte("somebucket")}
 
-	http.HandleFunc("/", c.echoString)
 	http.HandleFunc("/count", c.counterHandler)
 	http.HandleFunc("/reset", c.resetHandler)
 	http.HandleFunc("/crash", c.crashHandler)
