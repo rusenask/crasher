@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "crasher.fullname" . }}
+  labels:
+    app: {{ template "crasher.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  clusterIP: None
+  ports:
+    - name: crasher
+      port: 8081
+  selector:
+    app: {{ template "crasher.name" . }}
+    release: {{ .Release.Name }}
