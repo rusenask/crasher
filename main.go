@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 
@@ -117,6 +118,8 @@ func main() {
 
 	dev := flag.Bool("dev", false, "if -dev supplied, creates crasher.db in current dir")
 	flag.Parse()
+
+	os.MkdirAll("/data", 0755)
 
 	path := "/data/crasher.db"
 
