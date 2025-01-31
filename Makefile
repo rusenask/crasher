@@ -7,7 +7,7 @@ stk:
 build:
 	CGO_ENABLED=0 GOOS=linux go build -o crasher .
 	
-image: build
+image:
 	docker build --platform linux/amd64 -t karolisr/crasher:latest -f Dockerfile .
 
 push: image
